@@ -17,7 +17,7 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error("MongoDB Connection Error:", err.message));
 
-// ✅ Fix for ES Modules (__dirname, __filename)
+// Fix for __dirname and __filename in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(_filename);
 
@@ -32,5 +32,5 @@ app.get("*", (req, res) => {
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+  console.log("Server running on port " + PORT);
 });
