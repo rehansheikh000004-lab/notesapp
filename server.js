@@ -19,7 +19,7 @@ mongoose
 
 // Fix for __dirname and __filename in ES Modules
 const __filename = fileURLToPath(import.meta.url);
-const _dirname = path.dirname(_filename);
+const _dirname = path.dirname(Server.js);
 
 // ✅ Serve frontend build (optional)
 const buildPath = path.join(__dirname, "../frontend/dist");
