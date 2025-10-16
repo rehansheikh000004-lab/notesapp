@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #00fff7;
+      color: #111;
+      cursor: pointer;
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz App</h1>
+  <p id="question"></p>
+  <div id="options"></div>
+  <p id="result"></p>
+
+  <script>
+    const quiz = [
+      { q: "What is 2 + 2?", options: ["3","4","5"], answer: "4" },
+      { q: "Capital of India?", options: ["Mumbai","Delhi","Kolkata"], answer: "Delhi" },
+      { q: "HTML stands for?", options: ["Hyper Text Markup Language","High Tech Markup Language","Home Tool Markup"], answer: "Hyper Text Markup Language" }
+    ];
+    let index = 0;
+
+    function loadQuestion() {
+      if (index < quiz.length) {
+        document.getElementById("question").textContent = quiz[index].q;
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+        quiz[index].options.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => checkAnswer(opt);
+          optionsDiv.appendChild(btn);
+        });
+      } else {
+        document.getElementById("question").textContent = "Quiz Finished!";
+        document.getElementById("options").innerHTML = "";
+      }
+    }
+
+    function checkAnswer(ans) {
+      if (ans === quiz[index].answer) {
+        document.getElementById("result").textContent = "Correct ✅";
+      } else {
+        document.getElementById("result").textContent = "Wrong ❌";
+      }
+      index++;
+      setTimeout(() => {
+        document.getElementById("result").textContent = "";
+        loadQuestion();
+      }, 1000);
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>

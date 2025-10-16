@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quotes Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background: #00fff7;
+      color: #111;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Random Quotes</h1>
+  <p id="quote"></p>
+  <button onclick="newQuote()">New Quote</button>
+
+  <script>
+    const quotes = [
+      "Dream big, work hard.",
+      "Success comes to those who hustle.",
+      "Stay consistent, success will follow.",
+      "Risk something or sit with your dreams."
+    ];
+    function newQuote() {
+      const random = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("quote").textContent = random;
+    }
+    newQuote();
+  </script>
+</body>
+</html>
