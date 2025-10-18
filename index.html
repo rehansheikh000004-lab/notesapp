@@ -1,12 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notes App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotesApp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>📝 NotesApp</h1>
+
+  <div id="auth-section">
+    <h2>Login / Signup</h2>
+    <input id="username" placeholder="Username">
+    <input id="password" placeholder="Password" type="password">
+    <button onclick="signup()">Signup</button>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="notes-section" style="display:none;">
+    <h2>Your Notes</h2>
+    <input id="title" placeholder="Note title">
+    <textarea id="content" placeholder="Note content"></textarea>
+    <button onclick="addNote()">Add Note</button>
+
+    <div id="notes"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>
