@@ -1,4 +1,4 @@
-const BASE_URL = "https://notesapp-backend.onrender.com"; // your Render URL
+const API_URL = "https://notesapp-nmpz.onrender.com"; // your Render URL
 let currentUserId = null;
 
 // Signup
