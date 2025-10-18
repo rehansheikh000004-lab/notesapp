@@ -1,45 +1,82 @@
 // server.js
 import express from "express";
+import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
-import path from "path";
-import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json());
+app.use(cors({
+  origin: "https://rehansheikh000004-lab.github.io", // your GitHub Pages site
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
-// Fix __dirname and __filename for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB error:", err));
 
-// ✅ MongoDB Connection
-const mongoURI = process.env.MONGODB_URI;
-if (!mongoURI) {
-  console.error("❌ Missing MONGODB_URI in .env");
-  process.exit(1);
-}
-mongoose
-  .connect(mongoURI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB error:", err));
+// Schema
+const userSchema = new mongoose.Schema({
+  username: String,
+  password: String
+});
 
-// Example route
+const noteSchema = new mongoose.Schema({
+  userId: String,
+  title: String,
+  content: String
+});
+
+const User = mongoose.model("User", userSchema);
+const Note = mongoose.model("Note", noteSchema);
+
+// Routes
 app.get("/", (req, res) => {
-  res.send("🚀 Server is running successfully!");
+  res.send("🚀 NotesApp backend running successfully!");
 });
 
-// Serve frontend (optional)
-const frontendPath = path.join(__dirname, "public");
-app.use(express.static(frontendPath));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
+// Signup
+app.post("/api/auth/signup", async (req, res) => {
+  const { username, password } = req.body;
+  const existingUser = await User.findOne({ username });
+  if (existingUser) return res.status(400).json({ message: "User already exists" });
+
+  const user = new User({ username, password });
+  await user.save();
+  res.json({ message: "Signup successful" });
 });
 
+// Login
+app.post("/api/auth/login", async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username, password });
+  if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
+  res.json({ message: "Login successful", userId: user._id });
+});
+
+// Get notes
+app.get("/api/notes/:userId", async (req, res) => {
+  const notes = await Note.find({ userId: req.params.userId });
+  res.json(notes);
+});
+
+// Add note
+app.post("/api/notes", async (req, res) => {
+  const { userId, title, content } = req.body;
+  const note = new Note({ userId, title, content });
+  await note.save();
+  res.json({ message: "Note added successfully" });
+});
+
+// Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
