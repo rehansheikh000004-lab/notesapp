@@ -6,7 +6,7 @@ async function signup() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch(`${BASE_URL}/api/auth/signup`, {
+  const res = await fetch(`${API_URL}/api/auth/signup`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ username, password })
@@ -20,7 +20,7 @@ async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
+  const res = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ username, password })
@@ -42,7 +42,7 @@ async function addNote() {
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
 
-  await fetch(`${BASE_URL}/api/notes`, {
+  await fetch(`${API_URL}/api/notes`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ userId: currentUserId, title, content })
@@ -53,7 +53,7 @@ async function addNote() {
 
 // Load Notes
 async function loadNotes() {
-  const res = await fetch(`${BASE_URL}/api/notes/${currentUserId}`);
+  const res = await fetch(`${API_URL}/api/notes/${currentUserId}`);
   const notes = await res.json();
 
   const notesDiv = document.getElementById("notes");
