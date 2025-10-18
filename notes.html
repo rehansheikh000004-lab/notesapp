@@ -1,51 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Notes App</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-    }
-    textarea {
-      width: 80%;
-      height: 200px;
-      margin-bottom: 10px;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      padding: 10px 15px;
-      margin: 5px;
-      border: none;
-      border-radius: 5px;
-      background: #00fff7;
-      color: #111;
-      cursor: pointer;
-      font-weight: bold;
-    }
-  </style>
-</head>
 <body>
-  <h1>Notes App</h1>
-  <textarea id="note"></textarea><br>
-  <button onclick="saveNote()">Save</button>
-  <button onclick="loadNote()">Load</button>
+  <h2>Your Notes</h2>
+  <button id="logoutBtn">Logout</button>
 
-  <script>
-    function saveNote() {
-      const note = document.getElementById("note").value;
-      localStorage.setItem("myNote", note);
-      alert("Note saved!");
-    }
-    function loadNote() {
-      const note = localStorage.getItem("myNote");
-      document.getElementById("note").value = note || "";
-    }
-  </script>
+  <form id="noteForm">
+    <input type="text" name="title" placeholder="Title" required />
+    <textarea name="content" placeholder="Write your note..." required></textarea>
+    <button type="submit">Add Note</button>
+  </form>
+
+  <ul id="notesList"></ul>
+
+  <script src="script.js"></script>
 </body>
-</html>

@@ -1,67 +1,149 @@
-const BASE_URL = "https://notesapp-nmpz.onrender.com"; // your Render URL
-let currentUserId = null;
+// --- Configuration ---
+const backendURL = "https://notesapp-nmpz.onrender.com"; // Your Render backend URL
 
-// Signup
-async function signup() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+// --- Elements ---
+const signupForm = document.getElementById("signupForm");
+const loginForm = document.getElementById("loginForm");
+const notesSection = document.getElementById("notesSection");
+const notesList = document.getElementById("notesList");
+const noteForm = document.getElementById("noteForm");
+const logoutBtn = document.getElementById("logoutBtn");
 
-  const res = await fetch(`${BASE_URL}/api/auth/signup`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ username, password })
-  });
-  const data = await res.json();
-  alert(data.message);
+// --- Local Storage for Logged-in User ---
+function saveUser(userId) {
+  localStorage.setItem("userId", userId);
 }
 
-// Login
-async function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+function getUser() {
+  return localStorage.getItem("userId");
+}
 
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ username, password })
+function logout() {
+  localStorage.removeItem("userId");
+  location.reload();
+}
+
+// --- Signup ---
+if (signupForm) {
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = e.target.username.value;
+    const password = e.target.password.value;
+
+    try {
+      const res = await fetch(`${backendURL}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      alert(data.message);
+    } catch (err) {
+      alert("Signup failed. Try again.");
+      console.error(err);
+    }
   });
-  const data = await res.json();
+}
 
-  if (data.userId) {
-    currentUserId = data.userId;
-    document.getElementById("auth-section").style.display = "none";
-    document.getElementById("notes-section").style.display = "block";
-    loadNotes();
-  } else {
-    alert(data.message);
+// --- Login ---
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = e.target.username.value;
+    const password = e.target.password.value;
+
+    try {
+      const res = await fetch(`${backendURL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      if (data.userId) {
+        saveUser(data.userId);
+        alert("Login successful!");
+        window.location.href = "notes.html";
+      } else {
+        alert(data.message || "Invalid credentials");
+      }
+    } catch (err) {
+      alert("Login failed. Try again.");
+      console.error(err);
+    }
+  });
+}
+
+// --- Fetch Notes ---
+async function fetchNotes() {
+  const userId = getUser();
+  if (!userId) return alert("Please login first.");
+
+  try {
+    const res = await fetch(`${backendURL}/api/notes/${userId}`);
+    const notes = await res.json();
+
+    notesList.innerHTML = "";
+    notes.forEach((note) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <strong>${note.title}</strong><br>${note.content}
+        <button onclick="deleteNote('${note._id}')">Delete</button>
+      `;
+      notesList.appendChild(li);
+    });
+  } catch (err) {
+    console.error("Error fetching notes:", err);
   }
 }
 
-// Add Note
-async function addNote() {
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
+// --- Add Note ---
+if (noteForm) {
+  noteForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const userId = getUser();
+    if (!userId) return alert("Please login first.");
 
-  await fetch(`${BASE_URL}/api/notes`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ userId: currentUserId, title, content })
+    const title = e.target.title.value;
+    const content = e.target.content.value;
+
+    try {
+      const res = await fetch(`${backendURL}/api/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, title, content }),
+      });
+
+      const data = await res.json();
+      alert(data.message);
+      e.target.reset();
+      fetchNotes();
+    } catch (err) {
+      alert("Failed to add note.");
+      console.error(err);
+    }
   });
-
-  loadNotes();
 }
 
-// Load Notes
-async function loadNotes() {
-  const res = await fetch(`${BASE_URL}/api/notes/${currentUserId}`);
-  const notes = await res.json();
+// --- Delete Note ---
+async function deleteNote(noteId) {
+  try {
+    const res = await fetch(`${backendURL}/api/notes/${noteId}`, {
+      method: "DELETE",
+    });
+    const data = await res.json();
+    alert(data.message);
+    fetchNotes();
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
+}
 
-  const notesDiv = document.getElementById("notes");
-  notesDiv.innerHTML = "";
-  notes.forEach(note => {
-    const div = document.createElement("div");
-    div.className = "note";
-    div.innerHTML = `<h3>${note.title}</h3><p>${note.content}</p>`;
-    notesDiv.appendChild(div);
-  });
+// --- Logout ---
+if (logoutBtn) logoutBtn.addEventListener("click", logout);
+
+// --- Auto Load Notes ---
+if (notesSection) {
+  fetchNotes();
 }
